@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '../store/type';
-import { Aware, SyncData } from './types';
+import { AwareData, PeerAwareData, SyncData } from './types';
 import { selectIs3d, selectLayers } from '../layers/slice';
 import {
   selectActiveFeature,
@@ -22,11 +22,21 @@ export const selectSyncData: (state: RootState) => SyncData = createSelector(
   }),
 );
 
-export const selectSyncLocalAware: (state: RootState) => Aware = createSelector(
-  [(s) => s.sync.user, selectActiveFeature, selectViewAt, selectInitialViewAt],
-  (user, activeFeature, viewAt) => ({
-    user: user ?? undefined,
-    viewAt,
-    activeFeature: activeFeature?.id,
-  }),
-);
+export const selectSyncLocalAware: (state: RootState) => AwareData =
+  createSelector(
+    [
+      (s) => s.sync.user,
+      selectActiveFeature,
+      selectViewAt,
+      selectInitialViewAt,
+    ],
+    (user, activeFeature, viewAt) => ({
+      user: user ?? undefined,
+      viewAt,
+      activeFeature: activeFeature?.id,
+    }),
+  );
+
+export const selectSyncPeerAwares = (
+  state: RootState,
+): Record<number, PeerAwareData> => state.sync.peerAwares;

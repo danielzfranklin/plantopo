@@ -1,3 +1,6 @@
 [submodule "maplibre-gl-js"]
 	path = maplibre-gl-js
 	url = git@github.com:danielzfranklin/maplibre-gl-js.git
+[submodule "web/assets/vendor/collaboration-kit"]
+	path = web/assets/vendor/collaboration-kit
+	url = git@github.com:danielzfranklin/collaboration-kit

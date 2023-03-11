@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { JsonObject, JsonTemplateObject } from '@sanalabs/json';
 import { RootState } from '../store/type';
-import { PeerAware } from './types';
+import { PeerAwareData, SyncData } from './types';
 import { CurrentUser } from '../../globals';
 
 export interface State {
   user: CurrentUser | null;
   onlineStatus: 'connecting' | 'connected' | 'reconnecting';
   enableLocalSave: boolean;
-  peerAwares: { [clientId: number]: PeerAware };
+  peerAwares: Record<number, PeerAwareData>;
 }
 
 const searchParams = new URLSearchParams(location.search);
@@ -41,21 +40,17 @@ const slice = createSlice({
         }
       }
     },
-    syncData(_state, _action: PayloadAction<JsonTemplateObject>) {},
-    reportAwareUpdate(state, { payload }: PayloadAction<JsonObject[]>) {
-      const list = payload as unknown as PeerAware[];
-      state.peerAwares = {};
-      for (const peer of list) {
-        if (!peer.isCurrentClient) {
-          state.peerAwares[peer.clientId] = peer;
-        }
-      }
+    syncData(_state, _action: PayloadAction<SyncData>) {},
+    syncPeerAwares(
+      state,
+      { payload }: PayloadAction<Record<number, PeerAwareData>>,
+    ) {
+      state.peerAwares = payload;
     },
   },
 });
 
-export const { syncData, reportSocketStatus, reportAwareUpdate } =
-  slice.actions;
+export const { syncData, reportSocketStatus, syncPeerAwares } = slice.actions;
 
 export default slice.reducer;
 

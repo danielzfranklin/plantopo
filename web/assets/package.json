@@ -18,7 +18,7 @@
     "@redux-devtools/extension": "^3.2.5",
     "@reduxjs/toolkit": "^1.9.3",
     "@sanalabs/json": "^0.1.9",
-    "@sanalabs/y-redux": "^0.1.13",
+    "@sanalabs/y-json": "^0.1.25",
     "@types/geojson": "^7946.0.10",
     "@types/jest": "^29.4.0",
     "@types/react": "^18.0.27",

@@ -1,4 +1,7 @@
-import { SyncYAwareness, SyncYJson } from '@sanalabs/y-redux';
+import {
+  SyncYJson,
+  SyncYAwareness,
+} from '../../../vendor/collaboration-kit/packages/y-redux/src/index';
 import { useEffect, useState } from 'react';
 import { WebsocketProvider } from 'y-websocket';
 import * as Y from 'yjs';
@@ -6,11 +9,11 @@ import { useAppDispatch, useAppSelector, useAppStore } from '../hooks';
 import { Awareness as YAwareness } from 'y-protocols/awareness';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import {
-  reportAwareUpdate,
   reportSocketStatus,
   syncData,
   selectEnableLocalSave,
   SocketStatus,
+  syncPeerAwares,
 } from './slice';
 import * as decoding from 'lib0/decoding';
 import {
@@ -18,9 +21,12 @@ import {
   syncInitialViewAt,
   maybeTimeoutInitialViewAt,
 } from '../mapSlice';
-import { selectSyncData, selectSyncLocalAware } from './syncSelectors';
+import {
+  selectSyncData,
+  selectSyncLocalAware,
+  selectSyncPeerAwares,
+} from './syncSelectors';
 import { RootState } from '../store/type';
-import { JsonTemplateObject } from '@sanalabs/json';
 
 const RESYNC_INTERVAL_MS = 1000 * 60 * 5;
 const MAX_BACKOFF_MS = 1000 * 30;
@@ -93,15 +99,18 @@ export default function MapSync() {
     <>
       <SyncYJson
         yJson={state.yData}
-        selectData={(state: RootState) => selectSyncData(state) as any}
+        selectData={(state: RootState) => selectSyncData(state)}
         setData={syncData}
       />
       <SyncYAwareness
         awareness={state.yAwareness}
         selectLocalAwarenessState={(state: RootState) =>
-          selectSyncLocalAware(state) as any
+          selectSyncLocalAware(state)
         }
-        setAwarenessStates={reportAwareUpdate}
+        selectPeerAwarenessStates={(state: RootState) =>
+          selectSyncPeerAwares(state)
+        }
+        setPeerAwarenessStates={syncPeerAwares}
       />
     </>
   );
