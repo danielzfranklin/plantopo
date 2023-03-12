@@ -56,13 +56,6 @@ defmodule PlanTopoWeb.Sync.Socket do
   end
 
   @impl :cowboy_websocket
-  def terminate(reason, _partial_req, _engine) do
-    Tracer.add_event("sync socket terminate", reason: reason)
-    Tracer.end_span()
-    :ok
-  end
-
-  @impl :cowboy_websocket
   def websocket_handle({:ping, _}, engine), do: {:reply, :pong, engine}
 
   @impl :cowboy_websocket
