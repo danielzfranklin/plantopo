@@ -1,6 +1,6 @@
 defmodule PlanTopoWeb.UserConfirmationInstructionsLive do
   use PlanTopoWeb, :live_view
-
+  require Logger
   alias PlanTopo.Accounts
 
   def render(assigns) do
@@ -28,10 +28,16 @@ defmodule PlanTopoWeb.UserConfirmationInstructionsLive do
 
   def handle_event("send_instructions", %{"user" => %{"email" => email}}, socket) do
     if user = Accounts.get_user_by_email(email) do
-      Accounts.deliver_user_confirmation_instructions(
-        user,
-        &url(~p"/users/confirm/#{&1}")
-      )
+      case Accounts.deliver_user_confirmation_instructions(
+             user,
+             &url(~p"/users/confirm/#{&1}")
+           ) do
+        {:ok, _} ->
+          nil
+
+        {:error, error} ->
+          Logger.info("Failed to deliver user confirmation instructions: #{inspect(error)}")
+      end
     end
 
     info =

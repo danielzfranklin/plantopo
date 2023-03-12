@@ -282,15 +282,18 @@ defmodule PlanTopo.Sync.Engine do
 
   defp bump_timeout(state) do
     Map.update(state, :timeout_timer, nil, fn old ->
-      if old, do: Process.cancel_timer(old)
+      if old do
+        _ = Process.cancel_timer(old)
+        nil
+      end
+
       Process.send_after(self(), :timeout, @timeout_millis)
     end)
   end
 
   defp broadcast(state, data) do
-    for peer <- Map.keys(state.sockets) do
-      send(peer, {:send, data})
-    end
+    Map.keys(state.sockets)
+    |> Enum.each(fn peer -> send(peer, {:send, data}) end)
   end
 
   defp initial_view_at_msg(value) do
@@ -356,9 +359,12 @@ defmodule PlanTopo.Sync.Engine do
   end
 
   defp run_task(fun) do
-    Task.Supervisor.async(PlanTopo.TaskSupervisor, fn ->
-      fun.()
-      :task_ok
-    end)
+    _ =
+      Task.Supervisor.async(PlanTopo.TaskSupervisor, fn ->
+        fun.()
+        :task_ok
+      end)
+
+    nil
   end
 end

@@ -1,11 +1,11 @@
 defmodule PlanTopoWeb.UserForgotPasswordLive do
   use PlanTopoWeb, :live_view
-
+  require Logger
   alias PlanTopo.Accounts
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="max-w-sm mx-auto">
       <.header class="text-center">
         Forgot your password?
         <:subtitle>We'll send a password reset link to your inbox</:subtitle>
@@ -19,7 +19,7 @@ defmodule PlanTopoWeb.UserForgotPasswordLive do
           </.button>
         </:actions>
       </.simple_form>
-      <p class="text-center mt-4">
+      <p class="mt-4 text-center">
         <.link href={~p"/users/register"}>Register</.link>
         |
         <.link href={~p"/users/log_in"}>Log in</.link>
@@ -34,10 +34,16 @@ defmodule PlanTopoWeb.UserForgotPasswordLive do
 
   def handle_event("send_email", %{"user" => %{"email" => email}}, socket) do
     if user = Accounts.get_user_by_email(email) do
-      Accounts.deliver_user_reset_password_instructions(
-        user,
-        &url(~p"/users/reset_password/#{&1}")
-      )
+      case Accounts.deliver_user_reset_password_instructions(
+             user,
+             &url(~p"/users/reset_password/#{&1}")
+           ) do
+        {:ok, _} ->
+          nil
+
+        {:error, error} ->
+          Logger.info("Failed to deliver user password reset instructions: #{inspect(error)}")
+      end
     end
 
     info =

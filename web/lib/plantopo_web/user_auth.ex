@@ -3,7 +3,7 @@ defmodule PlanTopoWeb.UserAuth do
 
   import Plug.Conn
   import Phoenix.Controller
-
+  require Logger
   alias PlanTopo.Accounts
 
   # Make the remember me cookie valid for 60 days.
@@ -76,6 +76,10 @@ defmodule PlanTopoWeb.UserAuth do
 
     if live_socket_id = get_session(conn, :live_socket_id) do
       PlanTopoWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
+      |> case do
+        :ok -> nil
+        {:error, error} -> Logger.warn("Failed to broadcast disconnect: #{inspect(error)}")
+      end
     end
 
     conn

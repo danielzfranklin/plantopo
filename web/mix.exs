@@ -9,7 +9,12 @@ defmodule PlanTopo.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        flags: [:unmatched_returns, :missing_return, :unknown],
+        plt_add_apps: [:mix, :iex],
+        ignore_warnings: ".dialyzer_ignore.exs"
+      ]
     ]
   end
 
@@ -71,6 +76,7 @@ defmodule PlanTopo.MixProject do
       {:opentelemetry_api, "~> 1.2"},
       {:opentelemetry_ecto, "~> 1.1"},
       {:opentelemetry_exporter, "~> 1.4"},
+      {:dialyxir, "~> 1.2", only: [:dev], runtime: false},
       {:bimap, "~> 1.3"}
     ]
   end

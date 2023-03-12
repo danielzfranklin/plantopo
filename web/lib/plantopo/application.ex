@@ -8,9 +8,9 @@ defmodule PlanTopo.Application do
 
   @impl true
   def start(_type, _args) do
-    :opentelemetry_cowboy.setup()
-    OpentelemetryPhoenix.setup(adapter: :cowboy2)
-    OpentelemetryEcto.setup([:plantopo, :repo])
+    :ok = :opentelemetry_cowboy.setup()
+    :ok = OpentelemetryPhoenix.setup(adapter: :cowboy2)
+    :ok = OpentelemetryEcto.setup([:plantopo, :repo])
 
     :ok = :locus.start_loader(:city, {:maxmind, "GeoLite2-City"})
 

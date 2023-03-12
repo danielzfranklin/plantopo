@@ -1,6 +1,7 @@
 defmodule PlanTopoWeb.UserSettingsLive do
   use PlanTopoWeb, :live_view
   alias PlanTopo.Accounts
+  require Logger
 
   def render(assigns) do
     ~H"""
@@ -205,6 +206,13 @@ defmodule PlanTopoWeb.UserSettingsLive do
           user.email,
           &url(~p"/users/settings/confirm_email/#{&1}")
         )
+        |> case do
+          {:ok, _} ->
+            nil
+
+          {:error, error} ->
+            Logger.info("Failed to deliver user update email instructions: #{inspect(error)}")
+        end
 
         info = "A link to confirm your email change has been sent to the new address."
         {:noreply, put_flash(socket, :info, info)}
