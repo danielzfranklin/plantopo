@@ -28,7 +28,7 @@ const _debug = window.console.debug;
 window.console.debug = (...args: any[]) => {
   if (typeof args[0] === 'string' && args[0].startsWith('[SyncY')) {
     // Suppress noisy logs from y-redux
-    if (!window._dbg?.sync?.verboseLogs) return;
+    if (!window._dbg.sync.verboseLogs) return;
   }
   _debug(...args);
 };

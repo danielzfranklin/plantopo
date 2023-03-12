@@ -16,9 +16,9 @@ export interface AwareData extends JsonObject {
 }
 
 export interface SyncData extends JsonTemplateObject {
-  layers: Layers;
-  is3d: boolean;
-  features: Features;
-  featureTrash: Features;
+  layers?: Layers;
+  is3d?: boolean;
+  features?: Features;
+  featureTrash?: Features;
   [other: string]: any;
 }

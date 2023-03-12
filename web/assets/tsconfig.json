@@ -13,6 +13,7 @@
       "jest"
     ],
     "composite": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     ".",

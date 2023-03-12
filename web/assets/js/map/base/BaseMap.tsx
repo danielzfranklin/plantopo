@@ -168,8 +168,9 @@ export default function BaseMap(props: Props) {
             } else if (layerOp.operationType === OperationType.Substitution) {
               const l = layerOp.value as mlStyle.LayerSpecification;
               moveLayer(map, prevLayers, layerOp.index, l);
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             } else if (layerOp.operationType === OperationType.Nested) {
-              const layer = layers[layerOp.index];
+              const layer = layers[layerOp.index]!;
               const layerDelta = layerOp.delta;
               if (layerDelta.type !== DeltaType.Object)
                 throw new Error('Unreachable');
@@ -281,8 +282,8 @@ export default function BaseMap(props: Props) {
       effect: async ({ payload }, l) => {
         if (!payload) return;
         const features = selectFeatures(l.getState());
-        const feature = features?.[payload];
-        if (!features || !feature) return;
+        const feature = features[payload];
+        if (!feature) return;
 
         requestAnimationFrame(() => {
           const bbox = computeFeatureBbox(feature, features);
@@ -347,7 +348,7 @@ export default function BaseMap(props: Props) {
 
     for (const evt of ['dataloading', 'dataabort', 'data']) {
       map.on(evt, () => {
-        map && isLoading(!map.areTilesLoaded());
+        isLoading(!map.areTilesLoaded());
       });
     }
 
@@ -394,6 +395,7 @@ const moveLayer = (
     after = prevLayers.at(idx + 2);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (map.getLayer(value.id)) {
     map.removeLayer(value.id);
   }

@@ -27,6 +27,7 @@ export default function computeFeaturesGeoJson(
     let nextParentId = parentIdOf(feat);
     while (nextParentId !== ROOT_FEATURE) {
       const parent = features[nextParentId];
+      if (!parent) break;
       if (parent.type !== 'group') throw new Error('unreachable');
 
       const iVal = inheritedStyle.get(nextParentId);

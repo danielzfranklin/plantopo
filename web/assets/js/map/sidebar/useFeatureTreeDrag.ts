@@ -126,9 +126,9 @@ export default function useFeatureTreeDrag(): DragState | undefined {
 
         const update = computePos(targetFeat, pos);
         if (
-          update.parentId != state?.parentId ||
-          update.beforeIdx != state?.beforeIdx ||
-          update.afterIdx != state?.afterIdx
+          update.parentId != state.parentId ||
+          update.beforeIdx != state.beforeIdx ||
+          update.afterIdx != state.afterIdx
         ) {
           const at = serializeAt(
             update.parentId,
@@ -253,7 +253,7 @@ const elemFeature = (el: Element | null) => {
   return id;
 };
 
-const elemAt = (el: Element | null) => {
+const elemAt = (el: Element | null | undefined) => {
   if (!el) return undefined;
   const at = el.getAttribute('data-feature-at');
   if (!at) throw new Error('unreachable');

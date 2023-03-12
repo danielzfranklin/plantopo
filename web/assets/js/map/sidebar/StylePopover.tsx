@@ -26,7 +26,7 @@ const PointEditor = ({ feature }: { feature: PointFeature }) => {
   return (
     <div>
       <SpritePicker
-        value={feature?.style?.['icon-image']}
+        value={feature.style?.['icon-image']}
         onChange={(value) =>
           dispatch(
             updateFeature(feature.id, { style: { 'icon-image': value } }),

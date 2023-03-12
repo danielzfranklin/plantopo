@@ -37,6 +37,10 @@ const slice = createSlice({
       { payload }: PayloadAction<{ sourceId: string; value: Partial<Layer> }>,
     ) {
       const layer = state.sync.layers[payload.sourceId];
+      if (!layer) {
+        console.error('Cannot update nonexistant layer');
+        return;
+      }
       for (const prop in payload.value) {
         if (prop === 'sourceId') throw new Error('Cannot update sourceId');
         layer[prop] = payload.value[prop];
@@ -56,7 +60,7 @@ const slice = createSlice({
       layers[sourceId] = {
         sourceId,
         idx,
-        opacity: source.defaultOpacity || 1.0,
+        opacity: source?.defaultOpacity || 1.0,
       };
     },
 
@@ -95,11 +99,11 @@ export const selectLayerDatas = (state: RootState): LayerDatas =>
 
 export const selectSprites = createSelector(
   [selectLayerDisplayList, selectLayerSources],
-  (layers, sources) => {
+  (layers, sources): [string, string][] => {
     return layers
       .map((l) => sources[l.sourceId])
-      .filter((s) => !!s?.sprite)
-      .map((s) => [s.id, s.sprite as string]);
+      .filter((s) => (s === undefined ? false : !!s.sprite))
+      .map((s: LayerSource) => [s.id, s.sprite as string]);
   },
 );
 
@@ -119,17 +123,17 @@ export const selectLayerSourceDisplayList = createSelector(
 
 export const selectLayerSource =
   (sourceId: string) =>
-  (state: RootState): LayerSource =>
+  (state: RootState): LayerSource | undefined =>
     selectLayerSources(state)[sourceId];
 
 export const selectShouldCreditOS = createSelector(
   [selectLayerDisplayList, selectLayerSources, selectLayerDatas],
   (layers, layerSources, dataSources) => {
-    if (!layers) return false;
     return layers
       .map((view) => layerSources[view.sourceId])
       .flatMap((layerSource) => layerSource?.dependencies)
-      .map((dataSourceId) => dataSources[dataSourceId])
+      .filter((dataSourceId) => dataSourceId !== undefined)
+      .map((dataSourceId: string) => dataSources[dataSourceId])
       .some((dataSource) => dataSource?.attribution === 'os');
   },
 );

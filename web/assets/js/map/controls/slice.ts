@@ -155,6 +155,7 @@ startListening({
       l.dispatch(flyTo({ center: position }, { ignoreIfCenterVisible: true }));
     } else if (result.status === 'cancelled') {
       // We received clearGeolocation
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (result.status === 'rejected') {
       const err = result.error;
       if (!(err instanceof GeolocationPositionError)) {

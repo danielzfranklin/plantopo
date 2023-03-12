@@ -130,8 +130,8 @@ function LayerSelect({ close }) {
   const onReoder = useCallback(
     (newList: Layer[]) => {
       for (let i = 0; i < newList.length; i++) {
-        const newItem = newList[i];
-        if (viewLayers[i].sourceId !== newItem.sourceId) {
+        const newItem = newList[i]!;
+        if (viewLayers[i]?.sourceId !== newItem.sourceId) {
           dispatch(
             updateLayer({
               sourceId: newItem.sourceId,

@@ -11,7 +11,7 @@ export interface State {
 }
 
 const searchParams = new URLSearchParams(location.search);
-const disableLocalSave = searchParams.has('noLocal') ?? false;
+const disableLocalSave = searchParams.has('noLocal');
 
 const initialState: State = {
   user: window.currentUser,
@@ -28,16 +28,16 @@ const slice = createSlice({
   reducers: {
     reportSocketStatus(state, { payload }: PayloadAction<SocketStatus>) {
       if (
-        state.onlineStatus === 'connecting' ||
-        state.onlineStatus === 'reconnecting'
+        (state.onlineStatus === 'connecting' ||
+          state.onlineStatus === 'reconnecting') &&
+        payload === 'connected'
       ) {
-        if (payload === 'connected') {
-          state.onlineStatus = 'connected';
-        }
-      } else if (state.onlineStatus === 'connected') {
-        if (payload === 'disconnected' || payload === 'connecting') {
-          state.onlineStatus = 'reconnecting';
-        }
+        state.onlineStatus = 'connected';
+      } else if (
+        state.onlineStatus === 'connected' &&
+        (payload === 'disconnected' || payload === 'connecting')
+      ) {
+        state.onlineStatus = 'reconnecting';
       }
     },
     syncData(_state, _action: PayloadAction<SyncData>) {},

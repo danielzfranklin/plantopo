@@ -44,7 +44,7 @@ export default function Select<T extends { toString: () => string }>(
       <select
         id={selectId}
         className="block w-full py-1 pl-3 text-sm border-gray-300 rounded pr-7 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-        value={valueMap(value).id}
+        value={value ? valueMap(value).id : undefined}
         onChange={(e) => onChange && onChange(unmapValue(e.target.value))}
       >
         {options.map((option) => (
