@@ -271,15 +271,15 @@ export const selectLastTopLevelFeature = createSelector(
   (list) => list.at(-1),
 );
 
-const COMMON_COUNT = 14;
 // prettier-ignore
 const DEFAULT_COMMON = [
   'feature:maki-circle', 'feature:maki-circle-stroked', 'feature:maki-triangle',
   'feature:maki-triangle-stroked', 'feature:maki-square', 'feature:maki-square-stroked',
   'feature:maki-star', 'feature:maki-star-stroked', 'feature:maki-heart', 'feature:maki-embassy',
   'feature:maki-marker', 'feature:maki-marker-stroked', 'feature:maki-campsite',
-  'feature:maki-parking', 'feature:maki-water',
+  'feature:maki-parking', 'feature:maki-water', 'feature:maki-wetland', 'feature:maki-building',
 ];
+const COMMON_COUNT = DEFAULT_COMMON.length;
 
 export const selectCommonSprites = createSelector(
   [selectFeatures],
@@ -307,7 +307,7 @@ export const selectCommonSprites = createSelector(
       }
     }
 
-    const out = sortBy(counts.entries(), ([_sprite, count]) => count)
+    const out = sortBy(counts.entries(), ([_sprite, count]) => -count)
       .slice(0, COMMON_COUNT - 1)
       .map(([sprite, _count]) => sprite);
 
@@ -317,6 +317,8 @@ export const selectCommonSprites = createSelector(
         out.push(sprite);
       }
     }
+
+    console.info(out);
 
     return out;
   },

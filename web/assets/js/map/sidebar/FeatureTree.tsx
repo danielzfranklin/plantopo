@@ -201,7 +201,7 @@ function FeatureItem({
             <DropdownIcon className={classNames(!isExpanded && '-rotate-90')} />
           </button>
 
-          <Popover.Trigger>
+          <Popover.Trigger className="flex flex-col justify-center">
             <PreviewIcon feature={feature} />
           </Popover.Trigger>
 
@@ -270,29 +270,24 @@ function FeatureItem({
 }
 const PreviewIcon = ({ feature }: { feature: Feature }) => {
   if (feature.type === 'group') {
-    return <FolderIcon height="18px" />;
+    return <FolderIcon height="20px" />;
   } else if (feature.type === 'point') {
-    const sprite = feature?.style?.['icon-image'];
+    const sprite = feature.style?.['icon-image'];
 
-    if (sprite) {
-      return (
-        <SpritePreview
-          sprite={sprite}
-          fill={feature?.style?.['icon-color'] ?? 'black'}
-          opacity={feature?.style?.['icon-opacity'] ?? 1}
-          width="18px"
-          height="18px"
-        />
-      );
-    } else {
-      return <div className="w-[18px] h-[18px]" />;
-    }
+    return (
+      <SpritePreview
+        sprite={sprite}
+        color={feature.style?.['icon-color'] ?? 'black'}
+        opacity={feature.style?.['icon-opacity'] ?? 1}
+        size={20}
+      />
+    );
   } else if (feature.type === 'route') {
     return (
       <RouteIcon
-        height="16px"
-        fill={feature?.lineStyle?.['line-color'] ?? 'black'}
-        opacity={feature?.lineStyle?.['line-opacity'] ?? 1}
+        height="18px"
+        fill={feature.lineStyle?.['line-color'] ?? 'black'}
+        opacity={feature.lineStyle?.['line-opacity'] ?? 1}
       />
     );
   } else {

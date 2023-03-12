@@ -3,6 +3,7 @@
 @import '@radix-ui/colors/violet.css';
 
 .StylePopoverContent {
+  z-index: 2;
   border-radius: 4px;
   padding: 25px;
   width: 500px;

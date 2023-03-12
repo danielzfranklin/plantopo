@@ -1,60 +1,122 @@
+import { ChevronDownIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
 import classNames from '../../classNames';
+import Tooltip from '../components/Tooltip';
 import { selectCommonSprites } from '../features/slice';
 import { useAppStore } from '../hooks';
 import data from './preview.json';
 import SpritePreview from './SpritePreview';
+import * as Popover from '@radix-ui/react-popover';
+import { AnimatePresence, motion } from 'framer-motion';
+
+const sortedSpriteNames = Array.from(Object.keys(data)).sort();
 
 interface Props {
   value?: string;
   onChange: OnChange;
 }
 
-type OnChange = (value: string) => void;
+type OnChange = (value: string | undefined) => void;
 
-const SpritePicker = (props: Props) => {
+const SpritePicker = ({ value, onChange }: Props) => {
   const store = useAppStore();
-  // We don't want these to change while the user is editing this feature
-  const [initialValue] = useState(props.value);
-  const [common, rest] = useMemo(() => {
-    const common = selectCommonSprites(store.getState());
-    if (initialValue) {
-      const prevIdx = common.findIndex((s) => s === initialValue);
-      if (prevIdx >= 0) common.splice(prevIdx, 1);
-      common.splice(0, 0, initialValue);
-    }
-
-    const rest = Object.keys(data).filter((key) => !common.includes(key));
-    rest.sort();
-
-    return [common, rest];
-  }, [store, initialValue]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  // Never changes for an open popup
+  const common = useMemo(() => selectCommonSprites(store.getState()), [store]);
+  const valueNotInCommon =
+    value === undefined ? false : !common.includes(value);
 
   return (
-    <div>
-      <div className="flex flex-row overflow-hidden">
-        {common.map((sprite) => (
-          <Button
-            key={sprite}
-            sprite={sprite}
-            isSelected={props.value === sprite}
-            onChange={props.onChange}
-          />
-        ))}
-        TODO CLEAR BUTTON
-      </div>
+    <Popover.Root
+      open={isExpanded}
+      onOpenChange={(isOpen) => setIsExpanded(isOpen)}
+    >
+      <Popover.Anchor
+        className={classNames(
+          'flex flex-row p-1 justify-between overflow-hidden border border-gray-300 rounded-sm',
+        )}
+      >
+        <div className="flex flex-row">
+          {common.slice(0, valueNotInCommon ? -1 : undefined).map((sprite) => (
+            <Button
+              key={sprite}
+              sprite={sprite}
+              isSelected={value === sprite}
+              onChange={onChange}
+            />
+          ))}
 
-      <div>
-        {rest.map((sprite) => (
-          <Button
-            key={sprite}
-            sprite={sprite}
-            isSelected={props.value === sprite}
-            onChange={props.onChange}
-          />
-        ))}
-      </div>
-    </div>
+          <AnimatePresence initial={false}>
+            {valueNotInCommon && (
+              <Button
+                key={value}
+                sprite={value!}
+                isSelected={true}
+                onChange={onChange}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="flex ml-1">
+          <Tooltip title="No icon" key="no-icon">
+            <button
+              onClick={() => onChange(undefined)}
+              className={classNames(
+                'rounded-full p-[3px]',
+                value === undefined && 'bg-blue-100',
+              )}
+            >
+              <EyeSlashIcon className="h-[20px] stroke-gray-500" />
+            </button>
+          </Tooltip>
+
+          <Popover.Trigger asChild>
+            <motion.button
+              animate={isExpanded ? 'expanded' : 'closed'}
+              variants={{
+                expanded: { rotateZ: 180 },
+                closed: { rotateZ: 0 },
+              }}
+            >
+              <ChevronDownIcon className="h-[20px] px-1" />
+            </motion.button>
+          </Popover.Trigger>
+        </div>
+      </Popover.Anchor>
+
+      <ExpandedContent
+        value={value}
+        onChange={(value) => {
+          setIsExpanded(false);
+          onChange(value);
+        }}
+      />
+    </Popover.Root>
+  );
+};
+
+const ExpandedContent = ({
+  onChange,
+  value,
+}: {
+  onChange: OnChange;
+  value: string | undefined;
+}) => {
+  return (
+    <Popover.Content
+      align="start"
+      className="w-[var(--radix-popover-trigger-width)] bg-white p-1 border border-t-0 border-gray-300 rounded-sm"
+    >
+      {sortedSpriteNames.map((sprite) => (
+        <Button
+          key={sprite}
+          sprite={sprite}
+          isSelected={value === sprite}
+          onChange={onChange}
+        />
+      ))}
+    </Popover.Content>
   );
 };
 
@@ -66,11 +128,11 @@ const Button = (props: {
   <button
     onClick={() => props.onChange(props.sprite)}
     className={classNames(
-      'rounded-full p-[3px]',
+      'rounded-full p-[1px]',
       props.isSelected && 'bg-blue-100',
     )}
   >
-    <SpritePreview sprite={props.sprite} className="w-[20px] h-[20px]" />
+    <SpritePreview sprite={props.sprite} size={20} />
   </button>
 );
 
